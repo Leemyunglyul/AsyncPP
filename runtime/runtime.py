@@ -117,7 +117,7 @@ class StageRuntime:
         if module_to_stage_map is None:
             # If IP addresses not specified, resort to all layers on
             # single machine.
-            assert self.rank is None
+            #assert self.rank is None
             self.modules_with_dependencies = ModulesWithDependencies(model)
             self.is_criterion = True
             self.rank_in_stage = 0
@@ -241,7 +241,9 @@ class StageRuntime:
                     groups.append(dist.new_group(ranks=ranks))
                 else:
                     groups.append(None)
-            group = groups[self.stage]
+            group = None
+            if len(groups) > 1:
+                group = groups[self.stage]
         else:
             group = None
 
@@ -650,6 +652,8 @@ class StageRuntime:
         return self.tensors[-1]["target_length"][0].item()
 
     def run_ack(self):
+        if self.num_stages <= 1:
+            return
         # No need for ack if running on a single worker.
         if self.rank is None:
             return

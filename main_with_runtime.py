@@ -600,6 +600,8 @@ def validate(val_loader, r, epoch, du):
 
 
 def save_checkpoint(state, checkpoint_dir, stage, isbest=False):
+    if stage is None:
+        stage = 0
     assert os.path.isdir(checkpoint_dir)
     checkpoint_file_path = os.path.join(checkpoint_dir, "checkpoint-best.%d.pth.tar" % stage) if isbest else os.path.join(checkpoint_dir, "checkpoint.%d.pth.tar" % stage)
     torch.save(state, checkpoint_file_path)
