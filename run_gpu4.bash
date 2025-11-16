@@ -11,7 +11,7 @@
 
 # (마스터 IP 주소 - Rank 0의 내부 IP로 수정하세요!)
 MASTER_IP="10.140.0.2"
-MASTER_PORT="22"
+MASTER_PORT="12345"
 
 # (실험 이름 - 이전과 겹치지 않게 새로 지정)
 EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=4/4gpu_pipeline_test/"
