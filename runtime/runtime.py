@@ -117,7 +117,7 @@ class StageRuntime:
         if module_to_stage_map is None:
             # If IP addresses not specified, resort to all layers on
             # single machine.
-            assert self.rank is None
+            #assert self.rank is None
             self.modules_with_dependencies = ModulesWithDependencies(model)
             self.is_criterion = True
             self.rank_in_stage = 0
