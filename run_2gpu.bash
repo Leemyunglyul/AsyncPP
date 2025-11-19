@@ -19,8 +19,6 @@ export NCCL_DEBUG=INFO
 
 export GLOO_SOCKET_IFNAME=eth0
 
-export NCCL_TIMEOUT=300
-
 # (실험 이름 - 이전과 겹치지 않게 새로 지정)
 EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=2/2gpu_pipeline_test/"
 
@@ -38,7 +36,7 @@ export BASE_CMD="python main_with_runtime.py \
   -b 8 \
   --eval-batch-size 8 \
   -d wikitext-103-v1 \
-  --distributed_backend nccl \
+  --distributed_backend gloo \
   --lr 3e-4 \
   --lr_warmup \
   --optimizer nadamw \
