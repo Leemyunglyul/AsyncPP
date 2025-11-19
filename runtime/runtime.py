@@ -241,7 +241,10 @@ class StageRuntime:
                     groups.append(dist.new_group(ranks=ranks))
                 else:
                     groups.append(None)
-            group = groups[self.stage]
+            if self.stage is not None:
+                group = groups[self.stage]
+            else:
+                group = None
         else:
             group = None
 
