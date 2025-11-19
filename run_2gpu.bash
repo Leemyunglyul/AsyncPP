@@ -8,7 +8,7 @@
 # 2. 이 스크립트 불러오기: source setup_4gpu.bash
 # 3. eval로 랭크 실행: eval "$BASE_CMD --rank 0 --local_rank 0"
 # -----------------------------------------------------------------
-
+export WORLD_SIZE=2
 # (마스터 IP 주소 - Rank 0의 내부 IP로 수정하세요!)
 MASTER_IP="35.229.197.138"
 MASTER_PORT="12345"
