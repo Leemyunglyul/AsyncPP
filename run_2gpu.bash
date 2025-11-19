@@ -1,22 +1,14 @@
 #!/bin/bash
 
 # -----------------------------------------------------------------
-# AsyncPP 4-GPU 파이프라인 환경 변수 설정 스크립트
-# 
-# 사용법: 
-# 1. 가상환경 활성화: source asyncpp/bin/activate
-# 2. 이 스크립트 불러오기: source setup_4gpu.bash
-# 3. eval로 랭크 실행: eval "$BASE_CMD --rank 0 --local_rank 0"
+# AsyncPP 2-GPU 파이프라인 환경 변수 설정 스크립트 (Cleaned)
 # -----------------------------------------------------------------
-export WORLD_SIZE=2
-# (마스터 IP 주소 - Rank 0의 내부 IP로 수정하세요!)
+
+export WORLD_SIZE=2 # 총 2개의 프로세스(VM) 사용
 MASTER_IP="35.229.197.138"
 MASTER_PORT="12345"
 
-export NCCL_SOCKET_IFNAME=eth0
-export NCCL_IB_DISABLE=1
-export NCCL_DEBUG=INFO
-
+# Gloo가 외부 IP에 바인딩할 때 사용할 내부 인터페이스를 명시적으로 지정
 export GLOO_SOCKET_IFNAME=eth0
 
 # (실험 이름 - 이전과 겹치지 않게 새로 지정)
@@ -51,6 +43,6 @@ export BASE_CMD="python main_with_runtime.py \
   --momentum 0.99 \
   --exp_name $EXP_NAME"
 
-echo ">>> 4-GPU 환경 변수(BASE_CMD)가 설정되었습니다."
+echo ">>> 2-GPU 환경 변수(BASE_CMD)가 설정되었습니다."
 echo ">>> 마스터 주소: $MASTER_IP:$MASTER_PORT"
 echo ">>> 실험 이름: $EXP_NAME"
