@@ -1,0 +1,10 @@
+{
+    "stage_to_rank_map": {
+        "0": [0],
+        "1": [1]
+    },
+    "stage_to_model_chunk_map": {
+        "0": [0, 4],
+        "1": [4, 8]
+    }
+}
