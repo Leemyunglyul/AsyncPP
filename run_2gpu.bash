@@ -13,8 +13,11 @@ export WORLD_SIZE=2
 MASTER_IP="35.229.197.138"
 MASTER_PORT="12345"
 
-export GLOO_SOCKET_IFNAME=eth0
 export NCCL_SOCKET_IFNAME=eth0
+export NCCL_IB_DISABLE=1
+export NCCL_DEBUG=INFO
+
+export GLOO_SOCKET_IFNAME=eth0
 
 # (실험 이름 - 이전과 겹치지 않게 새로 지정)
 EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=2/2gpu_pipeline_test/"
