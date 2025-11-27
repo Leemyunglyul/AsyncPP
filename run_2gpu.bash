@@ -1,21 +1,27 @@
 #!/bin/bash
 
 # -----------------------------------------------------------------
-# AsyncPP 2-GPU 파이프라인 환경 변수 설정 스크립트 (Cleaned)
+# AsyncPP 2-GPU 파이프라인 설정 (Tailscale VPN 전용)
 # -----------------------------------------------------------------
 
-export WORLD_SIZE=2 # 총 2개의 프로세스(VM) 사용
-MASTER_IP="10.140.0.2"
+# [중요] Rank 0 (마스터 노드)의 Tailscale IP 주소를 입력하세요!
+# `tailscale ip -4` 명령어로 확인 가능합니다.
+MASTER_IP="100.75.85.126"  # <--- 여기에 Rank 0의 Tailscale IP 입력
 MASTER_PORT="12345"
 
-# Gloo가 외부 IP에 바인딩할 때 사용할 내부 인터페이스를 명시적으로 지정
-export GLOO_SOCKET_IFNAME=eth0
+# 총 참여 프로세스 수 (VM 수)
+export WORLD_SIZE=2
 
-# (실험 이름 - 이전과 겹치지 않게 새로 지정)
-EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=2/2gpu_pipeline_test/"
+# [핵심] PyTorch가 사용할 네트워크 인터페이스를 Tailscale로 강제 지정
+export GLOO_SOCKET_IFNAME=tailscale0
+export NCCL_SOCKET_IFNAME=tailscale0
+export TP_SOCKET_IFNAME=tailscale0
 
+# 실험 이름
+EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=2/tailscale_2gpu_test/"
 
-# 공통 명령어 변수 (BASE_CMD) 내보내기
+# 공통 명령어 변수 (BASE_CMD)
+# 주의: -d wikitext-103-v1 대신 --dataset_name을 사용하여 모호함 방지
 export BASE_CMD="python main_with_runtime.py \
   --module models.gptn.gpus=2 \
   --config_path models/gptn/gpus=2/mp_conf.json \
@@ -27,7 +33,7 @@ export BASE_CMD="python main_with_runtime.py \
   --n_layer 8 \
   -b 8 \
   --eval-batch-size 8 \
-  -d wikitext-103-v1 \
+  --dataset_name wikitext-103-v1 \
   --distributed_backend gloo \
   --lr 3e-4 \
   --lr_warmup \
@@ -43,6 +49,5 @@ export BASE_CMD="python main_with_runtime.py \
   --momentum 0.99 \
   --exp_name $EXP_NAME"
 
-echo ">>> 2-GPU 환경 변수(BASE_CMD)가 설정되었습니다."
-echo ">>> 마스터 주소: $MASTER_IP:$MASTER_PORT"
-echo ">>> 실험 이름: $EXP_NAME"
+echo ">>> Tailscale 2-GPU 환경 변수가 설정되었습니다."
+echo ">>> 마스터(Rank 0) IP: $MASTER_IP (Interface: tailscale0)"
