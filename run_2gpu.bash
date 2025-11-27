@@ -11,7 +11,7 @@ MASTER_PORT="12345"
 
 # 총 참여 프로세스 수 (VM 수)
 export WORLD_SIZE=2
-
+export NCCL_DEBUG=INFO
 # [핵심] PyTorch가 사용할 네트워크 인터페이스를 Tailscale로 강제 지정
 export GLOO_SOCKET_IFNAME=tailscale0
 export NCCL_SOCKET_IFNAME=tailscale0
