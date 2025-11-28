@@ -1,9 +1,12 @@
 ###########
-nnodes=8
+
+export GLOO_SOCKET_IFNAME=lo
+
+nnodes=1
 batch="-b 8 --eval-batch-size 8"
-epochs="--epochs 50"
+epochs="--epochs 5"
 minibatches="--num_minibatches 1000 --num_eval_minibatches 25"
-ngpus="8"
+ngpus="2"
 model="--module models.gptn.gpus=$ngpus --block_size 512 --n_embd 768 --n_head 12 --n_layer 8 --config_path models/gptn/gpus=$ngpus/mp_conf.json"
 d="wikitext-103-v1"
 outdir=""$d"_gptn_512_768_12_8_b8"
@@ -20,25 +23,27 @@ ckptdir="$d/$expname"
 mkdir -p $ckptdir   # create checkpoint directory if not exists
 cmdstr="$basecmdstr $method --exp_name $expname --checkpoint_dir $ckptdir"
 for rank in $(seq 0 $(($ngpus-1))); do
-    cmd="$cmdstr --rank $rank --local_rank $(($rank % $nnodes)) &"
+    local_rank=$rank
+    cmd="$cmdstr --rank $rank --local_rank $local_rank > log_rank${rank}.txt 2>&1 &"
+    echo "Starting Rank $rank (logging to log_rank${rank}.txt"
     echo $cmd
     eval $cmd
 done
 wait
 
 # gpipe
-basecmdstr="python sync_main.py $model $batch -d $d $dd --master_addr localhost --distributed_backend nccl 
-$lr $epochs $minibatches $cg $logtb --recompute --lr_policy cosine --optimizer adamw"
+# basecmdstr="python sync_main.py $model $batch -d $d $dd --master_addr localhost --distributed_backend nccl 
+# $lr $epochs $minibatches $cg $logtb --recompute --lr_policy cosine --optimizer adamw"
 
 # gpipe
-method="--sync_schedule gpipe --num_microbatches 4"
-expname="$outdir/gpus=$ngpus/gpipe/"
-ckptdir="$d/$expname"    
-mkdir -p $ckptdir   # create checkpoint directory if not exists
-cmdstr="$basecmdstr $method --exp_name $expname --checkpoint_dir $ckptdir"
-for rank in $(seq 0 $(($ngpus-1))); do
-    cmd="$cmdstr --rank $rank --local_rank $(($rank % $nnodes)) &"
-    echo $cmd
-    eval $cmd
-done
-wait
+# method="--sync_schedule gpipe --num_microbatches 4"
+# expname="$outdir/gpus=$ngpus/gpipe/"
+# ckptdir="$d/$expname"    
+# mkdir -p $ckptdir   # create checkpoint directory if not exists
+# cmdstr="$basecmdstr $method --exp_name $expname --checkpoint_dir $ckptdir"
+# for rank in $(seq 0 $(($ngpus-1))); do
+#    cmd="$cmdstr --rank $rank --local_rank $(($rank % $nnodes)) &"
+#    echo $cmd
+#    eval $cmd
+# done
+# wait
