@@ -2,8 +2,9 @@
 
 
  #gpipe
-rt GLOO_SOCKET_IFNAME=lo
+export GLOO_SOCKET_IFNAME=lo
 export NCCL_SOCKET_IFNAME=lo
+export TORCH_AUTOGRAD_DETECT_ANOMALY=1
 
 n_processes=8
 n_physical_gpus=2
@@ -36,19 +37,3 @@ do
 done
 
 wait
-
-# basecmdstr="python sync_main.py $model $batch -d $d $dd --master_addr localhost --distributed_backend nccl 
-# $lr $epochs $minibatches $cg $logtb --recompute --lr_policy cosine --optimizer adamw"
-
-# gpipe
-# method="--sync_schedule gpipe --num_microbatches 4"
-# expname="$outdir/gpus=$ngpus/gpipe/"
-# ckptdir="$d/$expname"    
-# mkdir -p $ckptdir   # create checkpoint directory if not exists
-# cmdstr="$basecmdstr $method --exp_name $expname --checkpoint_dir $ckptdir"
-# for rank in $(seq 0 $(($ngpus-1))); do
-#    cmd="$cmdstr --rank $rank --local_rank $(($rank % $nnodes)) &"
-#    echo $cmd
-#    eval $cmd
-# done
-# wait
