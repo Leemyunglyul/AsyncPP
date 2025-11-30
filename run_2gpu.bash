@@ -6,19 +6,18 @@
 
 # [중요] Rank 0 (마스터 노드)의 Tailscale IP 주소를 입력하세요!
 # `tailscale ip -4` 명령어로 확인 가능합니다.
-MASTER_IP="100.75.85.126"  # <--- 여기에 Rank 0의 Tailscale IP 입력
+MASTER_IP="10.140.0.2"  # <--- 여기에 Rank 0의 Tailscale IP 입력
 MASTER_PORT="12345"
 
-# 총 참여 프로세스 수 (VM 수)
 export WORLD_SIZE=2
-export NCCL_DEBUG=INFO
-# [핵심] PyTorch가 사용할 네트워크 인터페이스를 Tailscale로 강제 지정
-export GLOO_SOCKET_IFNAME=tailscale0
-export NCCL_SOCKET_IFNAME=tailscale0
-export TP_SOCKET_IFNAME=tailscale0
+
+# 💡 [핵심] VPC 피어링이 되었으므로 'eth0'를 사용합니다.
+export GLOO_SOCKET_IFNAME=eth0
+export NCCL_SOCKET_IFNAME=eth0
+export TP_SOCKET_IFNAME=eth0
 
 # 실험 이름
-EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=2/tailscale_2gpu_test/"
+EXP_NAME="wikitext-103-v1_gptn_512_384_12_8_b8/gpus=4/vpc_peering_final/"
 
 # 공통 명령어 변수 (BASE_CMD)
 # 주의: -d wikitext-103-v1 대신 --dataset_name을 사용하여 모호함 방지
