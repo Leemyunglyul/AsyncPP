@@ -27,6 +27,10 @@ sys.path.append("..")
 from runtime import runtime
 from optim import adamw
 from optim import nadamw
+from optim import lion
+from optim import adafactor
+from optim import adan
+from optim import tiger
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--data_dir', '-dd', type=str, default='~/data',
@@ -349,6 +353,53 @@ def main():
                                           macrobatch=args.macrobatch, 
                                           clip_grad=args.clip_grad, save_dir=args.optim_save_dir,
                                           stash_to_cpu=args.stash_to_cpu)
+    elif args.optimizer == "lion":
+        optimizer = lion.LionWithWeightStashing(r.modules(), r.master_parameters,
+                                      r.model_parameters, loss_scale=args.loss_scale,
+                                      num_versions=num_versions,
+                                      lr=args.lr / 3.0, 
+                                      betas=(0.9, 0.99),
+                                      weight_decay=args.weight_decay,
+                                      verbose_freq=args.verbose_frequency,
+                                      macrobatch=args.macrobatch,
+                                      clip_grad=args.clip_grad, save_dir=args.optim_save_dir,
+                                      stash_to_cpu=args.stash_to_cpu)
+    elif args.optimizer == "adafactor":
+        optimizer = adafactor.AdafactorWithWeightStashing(
+                                      r.modules(), r.master_parameters,
+                                      r.model_parameters, loss_scale=args.loss_scale,
+                                      num_versions=num_versions,
+                                      lr=args.lr, 
+                                      weight_decay=args.weight_decay,
+                                      verbose_freq=args.verbose_frequency,
+                                      macrobatch=args.macrobatch,
+                                      clip_grad=args.clip_grad, save_dir=args.optim_save_dir,
+                                      stash_to_cpu=args.stash_to_cpu)
+    elif args.optimizer == "adan":
+        # Adan은 LR을 AdamW보다 약간 높게(혹은 같게) 써도 됩니다.
+        optimizer = adan.AdanWithWeightStashing(
+                                      r.modules(), r.master_parameters,
+                                      r.model_parameters, loss_scale=args.loss_scale,
+                                      num_versions=num_versions,
+                                      lr=args.lr, 
+                                      weight_decay=args.weight_decay,
+                                      verbose_freq=args.verbose_frequency,
+                                      macrobatch=args.macrobatch,
+                                      clip_grad=args.clip_grad, save_dir=args.optim_save_dir,
+                                      stash_to_cpu=args.stash_to_cpu)
+
+    elif args.optimizer == "tiger":
+        # Tiger는 Lion처럼 LR을 좀 낮춰서 (예: /3.0) 시작하는 게 안전합니다.
+        optimizer = tiger.TigerWithWeightStashing(
+                                      r.modules(), r.master_parameters,
+                                      r.model_parameters, loss_scale=args.loss_scale,
+                                      num_versions=num_versions,
+                                      lr=args.lr / 3.0, 
+                                      weight_decay=args.weight_decay,
+                                      verbose_freq=args.verbose_frequency,
+                                      macrobatch=args.macrobatch,
+                                      clip_grad=args.clip_grad, save_dir=args.optim_save_dir,
+                                      stash_to_cpu=args.stash_to_cpu)
     else:
         raise Exception("Invalid optimizer")
 
